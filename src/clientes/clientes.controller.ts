@@ -6,11 +6,14 @@ import {
   Patch,
   Param,
   Delete,
+  UseGuards,
 } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 import { ClientesService } from './clientes.service';
 import { CreateClienteDto } from './dto/create-cliente.dto';
 import { UpdateClienteDto } from './dto/update-cliente.dto';
 
+@UseGuards(AuthGuard('jwt'))
 @Controller('clientes')
 export class ClientesController {
   constructor(private readonly clientesService: ClientesService) {}
@@ -32,7 +35,7 @@ export class ClientesController {
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateClienteDto: UpdateClienteDto) {
-    return this.clientesService.update(+id, updateClienteDto);
+    return this.clientesService.update(id, updateClienteDto);
   }
 
   @Delete(':id')

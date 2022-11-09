@@ -1,6 +1,6 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { FindOptionsWhere, Repository } from 'typeorm';
 import { CreateClienteDto } from './dto/create-cliente.dto';
 import { UpdateClienteDto } from './dto/update-cliente.dto';
 import { Cliente } from './entities/cliente.entity';
@@ -25,14 +25,25 @@ export class ClientesService {
   }
 
   async findOne(id: string): Promise<Cliente> {
-    return await this.clienteRepository
+    /*return await this.clienteRepository
       .createQueryBuilder('cliente')
       .where('cliente.id = :id', { id: id })
-      .getOne();
+      .getOne();*/
+    return await this.clienteRepository.findOneByOrFail({ id });
   }
 
-  update(id: number, updateClienteDto: UpdateClienteDto) {
-    return `This action updates a #${id} cliente`;
+  async findOneOrFail(conditions: FindOptionsWhere<Cliente>) {
+    try {
+      return await this.clienteRepository.findOneByOrFail(conditions);
+    } catch (error) {
+      throw new NotFoundException(error.message);
+    }
+  }
+
+  async update(id: string, updateClienteDto: UpdateClienteDto) {
+    const cliente = await this.clienteRepository.findOneByOrFail({ id });
+    this.clienteRepository.merge(cliente, updateClienteDto);
+    return await this.clienteRepository.save(cliente);
   }
 
   remove(id: number) {

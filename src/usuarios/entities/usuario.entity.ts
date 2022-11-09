@@ -7,18 +7,18 @@ import {
 } from 'typeorm';
 
 @Entity()
-export class Cliente {
+export class Usuario {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
   @Column()
   nome: string;
 
-  @Column()
-  documento: string;
+  @Column({ unique: true })
+  email: string;
 
   @Column()
-  tipo: string;
+  senha: string;
 
   @CreateDateColumn()
   dataCriacao: string;
@@ -31,4 +31,9 @@ export class Cliente {
     default: true,
   })
   situacao: boolean;
+
+  @Column({
+    default: 'user',
+  })
+  permissao: string;
 }
